@@ -31,10 +31,17 @@ class RestaurantController extends Controller
             'min_order_price' => 'numeric|min:0',
             'delivery_fee' => 'numeric|min:0',
             'phone' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',// max 2MB
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        // Handle Image Upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('restaurants', 'public');
         }
 
         // Create Restaurant
@@ -44,7 +51,7 @@ class RestaurantController extends Controller
             'description' => $request->description,
             'address' => $request->address,
             'phone' => $request->phone,
-            'image' => $request->image,
+            'image' => $imagePath,
             'min_order_price' => $request->min_order_price ?? 0,
             'delivery_fee' => $request->delivery_fee ?? 0,
             'delivery_time' => $request->delivery_time,

@@ -32,7 +32,7 @@ class ProductController extends Controller
             'name'          => 'required|string|max:255',
             'description'   => 'nullable|string',
             'price'         => 'required|numeric|min:0',
-            'image'         => 'nullable|string', //
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -51,6 +51,12 @@ class ProductController extends Controller
             return response()->json(['message' => 'This category does not belong to this restaurant'], 422);
         }
 
+        // Handle Image Upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
         // Create Product
         $product = Product::create([
             'restaurant_id' => $request->restaurant_id,
@@ -58,7 +64,7 @@ class ProductController extends Controller
             'name'          => $request->name,
             'description'   => $request->description,
             'price'         => $request->price,
-            'image'         => $request->image,
+            'image'         => $imagePath,
         ]);
 
         return response()->json([
