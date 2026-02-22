@@ -2,5 +2,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return response()->json(['message' => 'QuickBite API is running... 🚀']);
+    return response()->json(['message' => 'QuickFood API is running... 🚀']);
 });
