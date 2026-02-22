@@ -1,14 +1,12 @@
 import { Link } from 'react-router-dom';
 import { FaStar, FaClock, FaMotorcycle } from 'react-icons/fa';
+import { getImageUrl } from '../../utils/imageConfig';
 
 const RestaurantCard = ({ restaurant }) => {
-  // Image Placeholder if upload didn't work perfectly
-  const imageUrl = restaurant.image 
-    ? `http://127.0.0.1:8000/storage/${restaurant.image}` 
-    : "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?fit=crop&w=500&q=60";
+  const imageUrl = getImageUrl(restaurant.image);
 
   return (
-    <Link to={`/restaurants/${restaurant.id}`} className="block group">
+    <Link to={`/restaurants/${restaurant.id}/products`} className="block group">
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
         
         {/* Image */}

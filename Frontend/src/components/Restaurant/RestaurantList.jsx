@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import RestaurantCard from './RestaurantCard';
-import LoadingSpinner from '../ui/LoadingSpinner';
-import axios from 'axios';
+import LoadingSpinner from '../../ui/LoadingSpinner';
+import api from '../../api/axios';
 
 const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const location = useLocation();
 
+  // Fetch restaurants when component mounts
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/restaurants');
+        const response = await api.get('/restaurants');
 
         const data = response.data.data ?? response.data;
         setRestaurants(data);
@@ -25,20 +29,20 @@ const RestaurantList = () => {
     fetchRestaurants();
   }, []);
 
-  if (loading) {
-    return (<LoadingSpinner LoadingText="Loading restaurants..." />);
-  }
+  if (loading) return <LoadingSpinner LoadingText="Loading restaurants..." />;
 
   return (
     <section id="restaurants" className="max-w-7xl mx-auto px-4 py-16">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Popular Restaurants 🍽️</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{location.pathname !== '/restaurants' ? "Popular Restaurants" : "All Restaurants"}</h2>
           <p className="text-gray-500 mt-2">Find the best food near you</p>
         </div>
-        <Link to="/restaurants" className="text-orange-500 font-semibold hover:underline">
-          View All &rarr;
-        </Link>
+        {location.pathname !== '/restaurants' && (
+          <Link to="/restaurants" className="text-orange-500 font-semibold hover:underline">
+            View All &rarr;
+          </Link>
+        )}
       </div>
 
       {/* Grid Layout */}
