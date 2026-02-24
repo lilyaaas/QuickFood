@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // User Registration
+    // User Registration (SPA Auth)
     public function register(Request $request)
     {
         // 1. Validate input
@@ -33,17 +34,16 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        // 3. Generate token
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Login the user immediately using Session guard
+        Auth::login($user);
 
         return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user,
-            'token' => $token
+            'message' => 'Account created successfully',
+            'user' => $user->only(['id', 'name', 'email', 'role'])
         ], 201);
     }
 
-    // User Login
+    // User Login (SPA Auth)
     public function login(Request $request)
     {
         // 1. Validate Input
@@ -56,31 +56,31 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // 2. Check User Exists
-        $user = User::where('email', $request->email)->first();
-
-        // 3. Check Password (Hash verification)
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        // 2. Attempt to authenticate using the Session guard
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            // 3. If authentication fails
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
-        // 4. Generate Token        
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $request->session()->regenerate();
 
         return response()->json([
             'message' => 'Logged in successfully',
-            'user' => $user,
-            'token' => $token,
+            'user' => Auth::user()->only(['id','name','email','role']),
         ], 200);
     }
 
-    // User Logout
+    // User Logout (SPA Auth)
     public function logout(Request $request)
     {
-        // Revoke the token that was used to authenticate the current request
-        $request->user()->currentAccessToken()->delete();
+        // For SPA Auth, we will log out using the Session guard
+        Auth::guard('web')->logout();
+        
+        // Invalidate the session and regenerate CSRF token
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'Logged out successfully'
