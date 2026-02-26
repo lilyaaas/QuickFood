@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 const Navbar = () => {
     const { totalQuantity } = useSelector((state) => state.cart);
-    const { user } = useSelector((state) => state.auth);
+    const { isAuthenticated } = useSelector((state) => state.auth);
 
     return (
         <nav className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
@@ -22,9 +22,14 @@ const Navbar = () => {
                         <Link to="/restaurants" className="text-gray-700 hover:text-orange-500 font-medium">Restaurants</Link>
                     </div>
 
+                    {/* 3. User Actions: Cart + Profile/Login */}
                     <div className="flex items-center space-x-4">
                         {/* Cart Icon */}
-                        <Link to="/cart" className="relative p-2 text-gray-600 hover:text-orange-500 transition">
+                        <Link
+                            to="/cart"
+                            className="relative p-2 text-gray-600 hover:text-orange-500 transition"
+                            title="Cart"
+                        >
                             <FaShoppingCart size={24} />
                             {totalQuantity > 0 && (
                                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -33,10 +38,14 @@ const Navbar = () => {
                             )}
                         </Link>
 
-                        {/* Auth Buttons */}
-                        {user ? (
-                            <Link to="/profile" className="flex items-center space-x-2 text-gray-700">
-                                <FaUser size={24} className="text-orange-500" />
+                        {/* Profile/Login */}
+                        {isAuthenticated ? (
+                            <Link
+                                to="/profile"
+                                className=" hover:text-gray-600 text-orange-500 transition p-2 rounded-full flex items-center justify-center"
+                                title="My Profile"
+                            >
+                                <FaUser size={20} />
                             </Link>
                         ) : (
                             <div className="flex space-x-2">
