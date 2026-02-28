@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaUser } from 'react-icons/fa';
+import { FaShoppingCart, FaUserCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 const Navbar = () => {
     const { totalQuantity } = useSelector((state) => state.cart);
-    const { isAuthenticated } = useSelector((state) => state.auth);
+    const { user, isAuthReady } = useSelector((state) => state.auth);
 
     return (
         <nav className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
@@ -38,21 +38,36 @@ const Navbar = () => {
                             )}
                         </Link>
 
-                        {/* Profile/Login */}
-                        {isAuthenticated ? (
+                        {/* Profile/Login Section */}
+                        {!isAuthReady ? (
+                            /* loading skeleton */
+                            <div className="flex items-center gap-4 animate-pulse">
+                                <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                            </div>
+                        ) : user ? (
+                            /* Profile Avatar */
                             <Link
                                 to="/profile"
-                                className=" hover:text-gray-600 text-orange-500 transition p-2 rounded-full flex items-center justify-center"
+                                className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex items-center justify-center hover:shadow-md transition bg-orange-50"
                                 title="My Profile"
                             >
-                                <FaUser size={20} />
+                                {user.avatar ? (
+                                    <img
+                                        src={`${import.meta.env.VITE_IMAGE_BASE_URL}/${user.avatar}`}
+                                        alt="Avatar"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <FaUserCircle size={28} className="text-orange-300" />
+                                )}
                             </Link>
                         ) : (
+                            /* login/register */
                             <div className="flex space-x-2">
-                                <Link to="/login" className="px-4 py-2 text-orange-500 border border-orange-500 rounded-full hover:bg-orange-50 transition">
+                                <Link to="/login" className="px-4 py-2 text-orange-500 border border-orange-500 rounded-full hover:bg-orange-50 transition font-medium">
                                     Login
                                 </Link>
-                                <Link to="/register" className="px-4 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition">
+                                <Link to="/register" className="px-4 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition font-medium">
                                     Sign Up
                                 </Link>
                             </div>
