@@ -39,7 +39,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Account created successfully',
-            'user' => $user->only(['id', 'name', 'email', 'role'])
+            'user' => $user->only(['id', 'name', 'email', 'role', 'phone', 'avatar']),
         ], 201);
     }
 
@@ -68,7 +68,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logged in successfully',
-            'user' => Auth::user()->only(['id','name','email','role']),
+            'user' => Auth::user()->only(['id','name','email','role', 'phone', 'avatar']),
         ], 200);
     }
 
